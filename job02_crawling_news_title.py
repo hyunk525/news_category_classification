@@ -22,7 +22,7 @@ driver = webdriver.Chrome('./chromedriver', options=options)
 
 df_titles = pd.DataFrame()
 
-for i in range(0, 6):
+for i in range(2, 4):
     titles = []
 
     for j in range(1, pages[i]+1):
@@ -30,6 +30,7 @@ for i in range(0, 6):
         driver.get(url)
         time.sleep(0.2)  #로딩시간 >> delay시킴
 
+        #이중for문 >> 기사제목 20개씩 긁어오기 위해 사용
         for k in range(1, 5):
             for l in range(1, 6):
                 x_path = '//*[@id ="section_body"]/ul[{}]/li[{}]/dl/dt[2]/a'.format(k, l)
@@ -37,26 +38,41 @@ for i in range(0, 6):
                     title = driver.find_element_by_xpath(x_path).text
                     title = re.compile('[^가-힣]').sub('', title)   #한글 타이틀만 저장
                     titles.append(title)
-                except NoSuchElementException as e:   #error case #1
+
+                # error case1
+                except NoSuchElementException as e:
+                    time.sleep(0.5)
+                    try:
+                        title = driver.find_element_by_xpath(x_path).text
+                        title = re.compile('[^가-힣]').sub('', title)
+                        titles.append(title)
+                    except:
+                        try:
+                            x_path = '//*[@id ="section_body"]/ul[{}]/li[{}]/dl/dt/a'.format(k, l)  #이미지가 없는 기사제목 긁어오기
+                            title = re.compile('[^가-힣]').sub('', title)
+                            titles.append(title)
+                        except:
+                            print('no such element')
+                # error case2
+                except StaleElementReferenceException as e:
                     print(e)
                     print(category[i], j, 'page', k*l)
-                except StaleElementReferenceException as e:   #error case #2
-                    print(e)
-                    print(category[i], j, 'page', k*l)
+                # error case3
                 except:
                     print('error')
 
-        if j % 30 == 0 :   #30페이지마다 저장+페이지표시(몇p부터 몇p까지인지)
+        #20개의 기사제목 30페이지마다 저장 >> 기사제목 600개
+        if j % 30 == 0 :   #30페이지마다 저장+페이지표시(처음부터 몇p까지인지)
             df_section_titles = pd.DataFrame(titles, columns=['titles'])
             df_section_titles['category'] = category[i]
             df_titles = pd.concat([df_titles, df_section_titles], ignore_index=True)
-            df_titles.to_csv('./crawling_data_{}_{}_{}.csv'.format(category[i], j-29, j), index=False)
+            df_titles.to_csv('./crawling_data_{}_{}.csv'.format(category[i], j), index=False)
             titles = []
 
     df_section_titles = pd.DataFrame(titles, columns=['titles'])
     df_section_titles['category'] = category[i]
     df_titles = pd.concat([df_titles, df_section_titles], ignore_index=True)
-    df_titles.to_csv('./crawling_data_{}_last.csv'.format(category[i]), index=False)
+    df_titles.to_csv('./crawling_data_{}_{}.csv'.format(category[i], j), index=False)
     titles = []
 
 driver.close()
