@@ -3,6 +3,7 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 import pandas as pd
 import re
 import time
+import datetime
 
 
 category = ['Politics', 'Economic', 'Social', 'Culture', 'World', 'IT']
@@ -22,7 +23,7 @@ driver = webdriver.Chrome('./chromedriver', options=options)
 
 df_titles = pd.DataFrame()
 
-for i in range(2, 4):
+for i in range(0, 6):
     titles = []
 
     for j in range(1, pages[i]+1):
@@ -66,13 +67,18 @@ for i in range(2, 4):
             df_section_titles = pd.DataFrame(titles, columns=['titles'])
             df_section_titles['category'] = category[i]
             df_titles = pd.concat([df_titles, df_section_titles], ignore_index=True)
-            df_titles.to_csv('./crawling_data_{}_{}.csv'.format(category[i], j), index=False)
+            df_section_titles.to_csv('./crawling_data/crawling_data_{}_{}_{}.csv'.format(category[i], j-29, j), index=False)
             titles = []
 
     df_section_titles = pd.DataFrame(titles, columns=['titles'])
     df_section_titles['category'] = category[i]
     df_titles = pd.concat([df_titles, df_section_titles], ignore_index=True)
-    df_titles.to_csv('./crawling_data_{}_{}.csv'.format(category[i], j), index=False)
+    df_titles.to_csv('./crawling_data/crawling_data_{}_last.csv'.format(category[i]), index=False)
     titles = []
+
+df_section_titles = pd.DataFrame(titles, columns=['titles'])
+df_section_titles['category'] = category[i]
+df_titles = pd.concat([df_titles, df_section_titles], ignore_index=True)
+df_titles.to_csv('./crawling_data/naver_titles_{}.csv'.format(datetime.datetime.now().strftime('%Y%m%d')), index=False)
 
 driver.close()
