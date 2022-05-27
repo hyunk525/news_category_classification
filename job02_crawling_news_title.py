@@ -14,6 +14,7 @@ pages = [110, 110, 110, 78, 110, 66]
 url = 'https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1=100#&date=%2000:00:00&page=1'
 
 options = webdriver.ChromeOptions()
+options.add_argument('headless')
 options.add_argument('lang=ko_KR')  #브라우저 언어설정 - 한국어로
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')  #리눅스에서 쓸때 필요
