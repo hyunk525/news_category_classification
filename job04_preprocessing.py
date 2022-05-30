@@ -81,7 +81,7 @@ print(max)
 X_pad = pad_sequences(tokend_X, max)
 print(X_pad)
 
-#
+#train_test_split
 X_train, X_test, Y_train, Y_test = train_test_split(X_pad, onehot_Y, test_size=0.1)
 print(X_train.shape, Y_train.shape)
 print(X_test.shape, Y_test.shape)
