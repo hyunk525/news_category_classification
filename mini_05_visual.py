@@ -124,11 +124,11 @@ avg_score = {}  #-- {제목 : 평균} 저장
 for t in movie_title:
     avg = top10_reviews[top10_reviews['movie'] == t]['score'].mean()
     avg_score[t] = avg
-plt.figure(figsize=(15, 5))
-plt.title('영화 평균 평점 (top 10: 리뷰 수)\n', fontsize=10)
-plt.xlabel('영화 제목', fontsize=8)
+plt.figure(figsize=(20, 10))
+plt.title('영화 평균 평점 (top 10: 리뷰 수)\n', fontsize=15)
+plt.xlabel('영화 제목')
 plt.ylabel('평균 평점')
-plt.xticks(rotation=20)
+plt.xticks(rotation=20, fontsize=6)
 for x, y in avg_score.items():
     color = np.array_str(np.where(y == max(avg_score.values()), 'orange', 'lightgrey'))
     plt.bar(x, y, color=color)
@@ -172,7 +172,7 @@ for title,ax in zip(avg_score.keys(), axs):
     ax.pie(values,
            autopct='%1.1f%%',
            colors=colors,
-           shadow=True,
+           shadow=False,
            startangle=180,
            textprops={'size':8})
     ax.axis('equal')
