@@ -69,35 +69,13 @@ X_pad = pad_sequences(tokend_X, 181)
 print(X_pad[:5])
 
 model = load_model('./models/movies_classification_model_0.8416485786437988.h5')
-# preds = model.predict(X_pad)
-# predicts = []
-# for pred in preds:
-#     most = label[np.argmax(pred)]
-#     pred[np.argmax(pred)] = 0
-#     second = label[np.argmax(pred)]
-#     predicts.append([most, second])
-# df['predict'] = predicts
-# print(df.head(30))
+
+score = model.predict(X_pad) # 예측
+# print(score)
 # exit()
 
-score = model.predict(X_pad[:5]) # 예측
-print(score)
-if(np.argmax(score[0])):
-    print(df.iloc[1], "{:.2f}% 확률로 긍정 리뷰입니다.\n".format(score[0][1] * 100))
-else:
-    print(df.iloc[1], "{:.2f}% 확률로 부정 리뷰입니다.\n".format((score[0][0]) * 100))
-
-# df['OX'] = 0
-# for i in range(len(df)):
-#     if df.loc[i, 'score'] in df.loc[i, 'predict']:
-#         df.loc[i, 'OX'] = 'O'
-#     else:
-#         df.loc[i, 'OX'] = 'X'
-# print(df.head(30))
-#
-# print(df['OX'].value_counts())
-# print(df['OX'].value_counts()/len(df))
-#
-# for i in range(len(df)):
-#     if df['score'][i] != df['predict'][i]:
-#         print(df.iloc[i])
+for i in range(len(df)):
+    if(np.argmax(score[i])):
+        print(df.iloc[i], "{:.2f}% 확률로 긍정 리뷰입니다.\n".format(score[i][1] * 100))
+    else:
+        print(df.iloc[i], "{:.2f}% 확률로 부정 리뷰입니다.\n".format((score[i][0]) * 100))
