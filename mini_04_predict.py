@@ -83,9 +83,9 @@ model = load_model('./models/movies_classification_model_0.8416485786437988.h5')
 score = model.predict(X_pad[:5]) # 예측
 print(score)
 if(np.argmax(score[0])):
-    print(X[0], "{:.2f}% 확률로 긍정 리뷰입니다.\n".format(score[0][1] * 100))
+    print(df.iloc[1], "{:.2f}% 확률로 긍정 리뷰입니다.\n".format(score[0][1] * 100))
 else:
-    print(X[0], "{:.2f}% 확률로 부정 리뷰입니다.\n".format((score[0][0]) * 100))
+    print(df.iloc[1], "{:.2f}% 확률로 부정 리뷰입니다.\n".format((score[0][0]) * 100))
 
 # df['OX'] = 0
 # for i in range(len(df)):
