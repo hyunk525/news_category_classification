@@ -111,22 +111,23 @@ top10_reviews = df_reviews[df_reviews['movie'].isin(top10_title)]
 #  2   score     6825 non-null   int64
 
 #-- 한글 폰트 사용 설정
-font_path = "C:/Windows/Fonts/NGULIM.ttf"
+font_path = "C:/Windows/Fonts/HYNAMM.ttf"
 font = font_manager.FontProperties(fname=font_path).get_name()
 rc('font', family=font)
 
 #-- 그래프 마이너스 기호 표시 설정
 matplotlib.rcParams['axes.unicode_minus'] = False
 
+#상위 10개 영화에 대한 평균 평점을 시각화
 movie_title = top10_reviews.movie.unique().tolist()    #-- 영화 제목 추출
 avg_score = {}  #-- {제목 : 평균} 저장
 for t in movie_title:
     avg = top10_reviews[top10_reviews['movie'] == t]['score'].mean()
     avg_score[t] = avg
 plt.figure(figsize=(15, 5))
-plt.title('The average rating of a movie (top 10: Reviews)\n', fontsize=8)
-plt.xlabel('Movie Title')
-plt.ylabel('Average Rating')
+plt.title('영화 평균 평점 (top 10: 리뷰 수)\n', fontsize=10)
+plt.xlabel('영화 제목', fontsize=8)
+plt.ylabel('평균 평점')
 plt.xticks(rotation=20)
 for x, y in avg_score.items():
     color = np.array_str(np.where(y == max(avg_score.values()), 'orange', 'lightgrey'))
@@ -137,8 +138,10 @@ for x, y in avg_score.items():
 plt.show()
 #exit()
 
-
-fig, axs = plt.subplots(5, 2, figsize=(15, 25))
+#평점 분포도
+#붉은 색 점선=평균
+fig, axs = plt.subplots(5, 2, figsize=(10, 15))
+fig.subplots_adjust(hspace=0.5)
 axs = axs.flatten()
 for title, avg, ax in zip(avg_score.keys(), avg_score.values(), axs):
     num_reviews = len(top10_reviews[top10_reviews['movie'] == title])
@@ -146,25 +149,31 @@ for title, avg, ax in zip(avg_score.keys(), avg_score.values(), axs):
     y = top10_reviews[top10_reviews['movie'] == title]['score']
     ax.set_title('\n%s (%d명)' % (title, num_reviews), fontsize=8)
     ax.set_ylim(0, 10.5, 2)
-    ax.plot(x, y, 'o')
+    ax.plot(x, y, 'o', markersize=3)
     ax.axhline(avg, color='red', linestyle='--')  # -- 평균 점선 나타내기
 plt.show()
+#exit()
 
-
-fig, axs = plt.subplots(5, 2, figsize=(15, 25))
+#원형 차트
+#레이블한 긍정 리뷰의 경우 pink, 부정 리뷰의 경우 gold, 그 외는 whitesmoke
+fig, axs = plt.subplots(2, 5, figsize=(15, 10))
+fig.subplots_adjust(hspace=0.5)
 axs = axs.flatten()
 colors = ['pink', 'gold', 'whitesmoke']
 # score 0~3(2) / 4~6(1) / 7~10(0)
-labels=['0(7~10점)', '1 (4~6점)', '2 (0~3점)']
+labels=['0(7~10점)', '2 (0~3점)', '1 (4~6점)']
+top10_reviews['score_bin'] = pd.cut(top10_reviews['score'], [0, 4, 7, 10], labels=[2, 1, 0])
 
 for title,ax in zip(avg_score.keys(), axs):
     num_reviews = len(top10_reviews[top10_reviews['movie'] == title])
-    values = top10_reviews[top10_reviews['movie'] == title]['score'].value_counts()
-    ax.set_title('\n%s (%d명)' % (title, num_reviews) , fontsize=8)
+    values = top10_reviews[top10_reviews['movie'] == title]['score_bin'].value_counts()
+    #print(values)
+    ax.set_title('\n%s (%d명)' % (title, num_reviews) , fontsize=10)
     ax.pie(values,
            autopct='%1.1f%%',
            colors=colors,
            shadow=True,
-           startangle=90)
+           startangle=180,
+           textprops={'size':8})
     ax.axis('equal')
 plt.show()
