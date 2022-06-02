@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
 
-X_train, X_test, Y_train, Y_test = np.load('./crawling_data/movies_max_181_wordsize_11132.npy', allow_pickle=True)
+X_train, X_test, Y_train, Y_test = np.load('./crawling_data/movies_max_181_wordsize_11132_0602.npy', allow_pickle=True)
 print(X_train.shape, Y_train.shape)
 print(X_test.shape, Y_test.shape)
 
@@ -29,7 +29,7 @@ model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accur
 fit_hist = model.fit(X_train, Y_train, batch_size=128, epochs=10, validation_data=(X_test, Y_test))
 
 #모델저장
-model.save('./models/movies_classification_model_{}.h5'.format(fit_hist.history['val_accuracy'][-1]))
+model.save('./models/movies_classification_model_{}_0602_01.h5'.format(fit_hist.history['val_accuracy'][-1]))
 
 plt.plot(fit_hist.history['val_accuracy'], label='val_accuracy')
 plt.plot(fit_hist.history['accuracy'], label='accuracy')

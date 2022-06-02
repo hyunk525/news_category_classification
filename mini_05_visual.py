@@ -33,7 +33,8 @@ df_reviews = df_reviews.drop_duplicates(['sentence'])
 
 # 영화 리스트 확인
 movie_lst = df.movie.unique()
-# print('전체 영화 편수 =', len(movie_lst))
+#print('전체 영화 편수 =', len(movie_lst))
+#print(list(movie_lst))
 # print(movie_lst[:10])
 # 전체 영화 편수 = 1122
 # ['그대가 조국' '괴테스쿨의 사고뭉치들' '삼진그룹 영어토익반' '박수건달' '범죄도시2' '닥터 스트레인지: 대혼돈의 멀티버스'
@@ -80,6 +81,9 @@ info_movie = df_reviews.groupby('movie')['score'].describe()
 # 뷰티풀 마인드                 1.0  10.000000       NaN  10.0  10.0  10.0  10.0  10.0
 # 힘을 내요, 미스터 리            1.0   8.000000       NaN   8.0   8.0   8.0   8.0   8.0
 
+# print(info_movie.sort_values(by=['count'], axis=0, ascending=False)[:15])
+# exit()
+
 Y = df['score']
 # score 0~3(2) / 4~6(1) / 7~10(0)
 for i in range(len(Y)):
@@ -96,9 +100,9 @@ for i in range(len(Y)):
 # 2      2   1492
 
 #top10 movies
-top10 = df_reviews.movie.value_counts().sort_values(ascending=False)[:10]
-top10_title = top10.index.tolist()
-top10_reviews = df_reviews[df_reviews['movie'].isin(top10_title)]
+top15 = df_reviews.movie.value_counts().sort_values(ascending=False)[:15]
+top15_title = top15.index.tolist()
+top15_reviews = df_reviews[df_reviews['movie'].isin(top15_title)]
 # print(top10_title)
 # ['범죄도시2', '그대가 조국', '닥터 스트레인지: 대혼돈의 멀티버스', '유체이탈자', '안녕하세요', '피는 물보다 진하다', '어부바', '자산어보', '야차', '리턴 투 파라다이스']
 # print(top10_reviews.info())
@@ -119,18 +123,18 @@ rc('font', family=font)
 matplotlib.rcParams['axes.unicode_minus'] = False
 
 #상위 10개 영화에 대한 평균 평점을 시각화
-movie_title = top10_reviews.movie.unique().tolist()    #-- 영화 제목 추출
+movie_title = top15_reviews.movie.unique().tolist()    #-- 영화 제목 추출
 avg_score = {}  #-- {제목 : 평균} 저장
 for t in movie_title:
-    avg = top10_reviews[top10_reviews['movie'] == t]['score'].mean()
+    avg = top15_reviews[top15_reviews['movie'] == t]['score'].mean()
     avg_score[t] = avg
-plt.figure(figsize=(20, 10))
-plt.title('영화 평균 평점 (top 10: 리뷰 수)\n', fontsize=15)
+plt.figure(figsize=(15, 10))
+plt.title('영화 평균 평점 (top 15: 리뷰 수)\n', fontsize=25)
 plt.xlabel('영화 제목')
 plt.ylabel('평균 평점')
 plt.xticks(rotation=20, fontsize=6)
 for x, y in avg_score.items():
-    color = np.array_str(np.where(y == max(avg_score.values()), 'orange', 'lightgrey'))
+    color = np.array_str(np.where(y == max(avg_score.values()), 'forestgreen', 'lightgrey'))
     plt.bar(x, y, color=color)
     plt.text(x, y, '%.2f' % y,
              horizontalalignment='center',
@@ -140,33 +144,32 @@ plt.show()
 
 #평점 분포도
 #붉은 색 점선=평균
-fig, axs = plt.subplots(5, 2, figsize=(10, 15))
+fig, axs = plt.subplots(5, 3, figsize=(10, 15))
 fig.subplots_adjust(hspace=0.5)
 axs = axs.flatten()
 for title, avg, ax in zip(avg_score.keys(), avg_score.values(), axs):
-    num_reviews = len(top10_reviews[top10_reviews['movie'] == title])
+    num_reviews = len(top15_reviews[top15_reviews['movie'] == title])
     x = np.arange(num_reviews)
-    y = top10_reviews[top10_reviews['movie'] == title]['score']
+    y = top15_reviews[top15_reviews['movie'] == title]['score']
     ax.set_title('\n%s (%d명)' % (title, num_reviews), fontsize=8)
     ax.set_ylim(0, 10.5, 2)
-    ax.plot(x, y, 'o', markersize=3)
-    ax.axhline(avg, color='red', linestyle='--')  # -- 평균 점선 나타내기
+    ax.plot(x, y, 'o', markersize=3, color='seagreen')
+    ax.axhline(avg, color='blue', linestyle='--')  # -- 평균 점선 나타내기
 plt.show()
 #exit()
 
 #원형 차트
-#레이블한 긍정 리뷰의 경우 pink, 부정 리뷰의 경우 gold, 그 외는 whitesmoke
-fig, axs = plt.subplots(2, 5, figsize=(15, 10))
+fig, axs = plt.subplots(3, 5, figsize=(15, 10))
 fig.subplots_adjust(hspace=0.5)
 axs = axs.flatten()
-colors = ['pink', 'gold', 'whitesmoke']
+colors = ['#92d050', '#c5e0b4', '#e2f0d9']
 # score 0~3(2) / 4~6(1) / 7~10(0)
-labels=['0(7~10점)', '2 (0~3점)', '1 (4~6점)']
-top10_reviews['score_bin'] = pd.cut(top10_reviews['score'], [0, 4, 7, 10], labels=[2, 1, 0])
+labels=['0(7~10점)','1 (4~6점)','2 (0~3점)']
+top15_reviews['score_bin'] = pd.cut(top15_reviews['score'], [0, 4, 7, 10], labels=[2, 1, 0])
 
 for title,ax in zip(avg_score.keys(), axs):
-    num_reviews = len(top10_reviews[top10_reviews['movie'] == title])
-    values = top10_reviews[top10_reviews['movie'] == title]['score_bin'].value_counts()
+    num_reviews = len(top15_reviews[top15_reviews['movie'] == title])
+    values = top15_reviews[top15_reviews['movie'] == title]['score_bin'].value_counts()
     #print(values)
     ax.set_title('\n%s (%d명)' % (title, num_reviews) , fontsize=10)
     ax.pie(values,
@@ -176,4 +179,5 @@ for title,ax in zip(avg_score.keys(), axs):
            startangle=180,
            textprops={'size':8})
     ax.axis('equal')
+plt.legend(labels)
 plt.show()

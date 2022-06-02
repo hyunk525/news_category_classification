@@ -35,21 +35,24 @@ for i in range(len(Y)):
 # print(df.groupby('score').size().reset_index(name = 'count'))
 # exit()
 
-#인코딩 >> 사이킷런의 머신러닝 알고리즘은 문자열 값을 입력 값으로 허락하지 않으므로, 모든 문자열 값들을 숫자 형으로 인코딩하는 전처리 작업 후에 머신러닝 모델에 학습을 시켜야함
-# 라벨인코딩 >> 범주형 변수의 문자열을 수치형으로 변환
-encoder = LabelEncoder()
-labeled_Y = encoder.fit_transform(Y)
-print(labeled_Y[:3])
-label = encoder.classes_
-print(label)
-
-# 엔코더저장
-with open('./models/movies_encoder.pickle', 'wb') as f:
-    pickle.dump(encoder, f)
+# #인코딩 >> 사이킷런의 머신러닝 알고리즘은 문자열 값을 입력 값으로 허락하지 않으므로, 모든 문자열 값들을 숫자 형으로 인코딩하는 전처리 작업 후에 머신러닝 모델에 학습을 시켜야함
+# # 라벨인코딩 >> 범주형 변수의 문자열을 수치형으로 변환
+# encoder = LabelEncoder()
+# labeled_Y = encoder.fit_transform(Y)
+# print(labeled_Y)
+# print(len(labeled_Y))
+# #exit()
+# label = encoder.classes_
+# print(label)
+#
+# # 엔코더저장
+# with open('./models/movies_encoder.pickle', 'wb') as f:
+#     pickle.dump(encoder, f)
 
 # 원핫인코딩 >> 피처값의 유형에 따라 새로운 피처를 추가해 고유값에 해당하는 칼럼에만 1표시/ 그외는 0표시
-onehot_Y = to_categorical(labeled_Y)
+onehot_Y = to_categorical(Y)
 print(onehot_Y)
+#exit()
 
 # 자연어처리 >> 조사, 감탄사 등 삭제하기
 # 토큰을 만들어줌 / 형태소 단위로 잘라줌 >> 피팅 후 딕셔너리를 가짐
@@ -89,7 +92,7 @@ print(tokend_X)
 print(token.word_index)  #토큰의 단어사전 >> 딕셔너리형태
 
 #토크나이저 저장
-with open('./models/movies_token.pickle', 'wb') as f:
+with open('./models/movies_token_0602.pickle', 'wb') as f:
     pickle.dump(token, f)
 
 # #모델 입력 사이즈 맞춰주기 >> 가장 긴 문장을 기준으로 모자란 곳에는 0으로 채우기
@@ -104,10 +107,11 @@ X_pad = pad_sequences(tokend_X, max)
 print(X_pad)
 
 # train_test_split
-X_train, X_test, Y_train, Y_test = train_test_split(X_pad, onehot_Y, test_size=0.1)
+X_train, X_test, Y_train, Y_test = train_test_split(X_pad, onehot_Y, test_size=0.2)
 print(X_train.shape, Y_train.shape)
 print(X_test.shape, Y_test.shape)
+exit()
 
 # 저장
 xy = X_train, X_test, Y_train, Y_test
-np.save('./crawling_data/movies_max_{}_wordsize_{}'.format(max, wordsize), xy)
+np.save('./crawling_data/movies_max_{}_wordsize_{}_0602'.format(max, wordsize), xy)

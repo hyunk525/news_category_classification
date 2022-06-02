@@ -68,7 +68,7 @@ X_pad = pad_sequences(tokend_X, 181)
 
 print(X_pad[:5])
 
-model = load_model('./models/movies_classification_model_0.8416485786437988.h5')
+model = load_model('./models/movies_classification_model_0.8448182344436646_0602.h5')
 
 score = model.predict(X_pad) # 예측
 # print(score)
